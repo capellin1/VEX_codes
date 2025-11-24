@@ -9,6 +9,64 @@ brain=Brain()
 
 # Robot configuration code
 
+# Define Drivetrain Motors
+# Assuming Left Motor is connected to PORT1 and Right Motor to PORT10
+# Note: The polarity (True/False) may need to be adjusted based on your robot's wiring to ensure both sides spin FORWARD together.
+left_motor = Motor(Ports.PORT1, True) # Configure polarity if necessary
+right_motor = Motor(Ports.PORT10, False)
+
+# Define the Controller
+controller_1 = Controller(PRIMARY) # Ensures the controller is initialized [13]
+
+# Pre-Autonomous Function
+def pre_autonomous():
+    # Used for any setup your robot may need (e.g., calibrating sensors, setting variables) [14].
+    
+    # Example: Setting default velocity for the motors (optional) [15].
+    left_motor.set_velocity(50, PERCENT)
+    right_motor.set_velocity(50, PERCENT)
+    
+    # Example: Calibrating an Inertial Sensor (if Dex has one) [16].
+    # gyro.calibrate()
+    pass 
+# Autonomous Mode Function (Pre-programmed moves)
+def autonomous():
+    # Commands within this function run when the match begins the Autonomous period [9].
+    
+    # Example Move 1: Drive Forward 200 mm [17, 18]
+    # Note: This command assumes a Drivetrain device named 'drivetrain' is configured.
+    drivetrain.drive_for(FORWARD, 200, MM)
+    
+    # Example Move 2: Wait 1 second [17]
+    wait(1, SECONDS) 
+    
+    # Example Move 3: Drive in Reverse 100 mm [19]
+    drivetrain.drive_for(REVERSE, 100, MM)
+    
+    # Example Move 4: Turn Right 90 degrees [20]
+    # drivetrain.turn_for(RIGHT, 90, DEGREES)
+# Driver Control Function (Controller control)
+def user_control():
+    # Commands within this function run during the driver control portion of a VRC match [9].
+    
+    # The while True loop ensures the robot constantly responds to controller input [7, 10].
+    while True:
+        # Use Tank Drive control:
+        # Left Joystick (Axis 3) controls the Left Motor velocity.
+        # Right Joystick (Axis 2) controls the Right Motor velocity [6, 7].
+        
+        # 1. Set the velocity of the motors based on the controller joystick positions (0-100 PERCENT)
+        left_motor.set_velocity(controller_1.axis3.position(), PERCENT) [6]
+        right_motor.set_velocity(controller_1.axis2.position(), PERCENT) [6]
+        
+        # 2. Spin the motors continuously in the forward direction. 
+        # The velocity set above determines the actual speed and direction (positive velocity for FORWARD, negative for REVERSE) [6, 7, 11].
+        left_motor.spin(FORWARD) [6]
+        right_motor.spin(FORWARD) [6]
+        
+        # 3. Wait a short duration (5 milliseconds is standard for VEX control loops) [7].
+        wait(5, MSEC) 
+
 
 # wait for rotation sensor to fully initialize
 wait(30, MSEC)
