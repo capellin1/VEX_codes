@@ -113,11 +113,12 @@ def rc_auto_loop_function_controller_1():
         wait(20, MSEC)
 
 # define variable for remote controller enable/disable
-remote_control_code_enabled = True
+remote_control_code_enabled = False
 
 rc_auto_loop_thread_controller_1 = Thread(rc_auto_loop_function_controller_1)
 
 #endregion VEXcode Generated Robot Configuration
+#start code
 
 import math
 drivetrain.drive(FORWARD)
@@ -129,28 +130,38 @@ def get_controller_1():
     global posx
     global posy
     global direction
-    ax2=controller_1.axis4.position()
+    ax2=controller_1.axis1.position()
     ax1=controller_1.axis2.position()
     drivetrain.set_drive_velocity(ax1, PERCENT)
-    drivetrain.set_turn_velocity(ax2*-1, PERCENT)
+    drivetrain.set_turn_velocity(ax2, PERCENT)
+    if ax2 is not 0:
+        drivetrain.turn(LEFT)
+    drivetrain.drive(FORWARD)
     if controller_1.buttonA.pressing():
-        motor_3.spin_for(FORWARD,90, DEGREES)
-    if controller_1.buttonB.pressing():
-        motor_3.spin_for(FORWARD,0, DEGREES)
+        motor_3.spin(FORWARD)
+    elif controller_1.buttonB.pressing():
+        motor_3.spin(REVERSE)
+    else:
+        motor_3.stop()
     if controller_1.buttonX.pressing():
-        motor_4.spin_for(FORWARD,90, DEGREES)
-    if controller_1.buttonY.pressing():
-       motor_4.spin_for(FORWARD,0, DEGREES)
-    if drivetrain.is_moving():
-        direction+=ax2
+        motor_4.spin(FORWARD)
+    elif controller_1.buttonY.pressing():
+        motor_4.spin(REVERSE)
+    else:
+        motor_4.stop()
+    if brain.timer.time(MSEC)%200 == 0:
+        direction+=ax1
         posx+=ax1*math.cos(ax2)
+        posy+=ax1*math.sin(ax2)
+        controller_1.screen.clear_row(1)
         controller_1.screen.set_cursor(1, 1)
         controller_1.screen.print("x:",posx,"y:",posy)
 drivetrain.set_drive_velocity(0, PERCENT)
 drivetrain.set_turn_velocity(0, PERCENT)
-drivetrain.drive_for(FORWARD, 200, MM)
-drivetrain.turn(DIRECTION)
+
+
 controller_1.screen.set_cursor(1, 1)
 while True:
     get_controller_1()
+
 
